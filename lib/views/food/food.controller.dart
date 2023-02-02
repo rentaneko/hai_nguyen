@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:hai_nguyen/@share/constants/url.constant.dart';
+import 'package:hai_nguyen/@share/utils/utils.dart';
+import 'package:hai_nguyen/model/food.model.dart';
+import 'package:hai_nguyen/model/restaurant.model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -14,6 +17,14 @@ class FoodController extends GetxController {
   late TextEditingController ingredients;
   late SharedPreferences _pref;
 
+  var listRestaurant = <Restaurant>[].obs;
+  var listFood = <Food>[].obs;
+
+  var selectedRestaurant = Restaurant().obs;
+
+  var isLoading = true.obs;
+  var isLoadingFood = true.obs;
+
   @override
   void onInit() {
     nameCtrl = TextEditingController();
@@ -22,6 +33,14 @@ class FoodController extends GetxController {
     description = TextEditingController();
     ingredients = TextEditingController();
 
+    Future.wait(
+      [
+        getAllRestaurant(),
+      ],
+    ).then((_) {
+      isLoading.value = false;
+      getFoodOfRestaurant().then((_) => isLoadingFood.value = false);
+    });
     super.onInit();
   }
 
@@ -47,7 +66,7 @@ class FoodController extends GetxController {
       },
       body: jsonEncode(
         <String, dynamic>{
-          "restaurantId": "63a73fa3fd177603e0f2f403",
+          "restaurantId": selectedRestaurant.value.id,
           "name": nameCtrl.text.trim(),
           "price": int.parse(price.text.trim()),
           "image": "D5",
@@ -59,9 +78,74 @@ class FoodController extends GetxController {
       ),
     );
     if (response.statusCode == 200) {
-      print('STATUS: ${jsonDecode(response.body)['message']}');
+      getFoodOfRestaurant();
+      goBack();
     } else {
       log('STATUS: ${response.statusCode}');
+    }
+  }
+
+  Future<void> getAllRestaurant() async {
+    _pref = await SharedPreferences.getInstance();
+    var url = Uri.parse('$BASE_URL/api/restaurant');
+
+    var res = await http.post(
+      url,
+      headers: {
+        'Content-type': CONTENT_TYPE,
+        AUTHORIZATION: '$BEARER${_pref.getString(TOKEN)}',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      var tmp = jsonDecode(res.body)['data'] as List;
+      for (var i = 0; i < tmp.length; i++) {
+        Restaurant restaurant = Restaurant();
+        restaurant.id = tmp[i]['_id'];
+        restaurant.name = tmp[i]['name'];
+        restaurant.type = tmp[i]['type'];
+        restaurant.tags =
+            List.from(tmp[i]['tags'] as List).map((e) => e.toString()).toList();
+        restaurant.distance = double.parse(tmp[i]['distance'].toString());
+        restaurant.time = int.parse(tmp[i]['time'].toString());
+        restaurant.categories = List.from(tmp[i]['categories'] as List)
+            .map((e) => e.toString())
+            .toList();
+        listRestaurant.add(restaurant);
+      }
+      selectedRestaurant.value = listRestaurant[0];
+    }
+  }
+
+  Future<void> getFoodOfRestaurant() async {
+    _pref = await SharedPreferences.getInstance();
+
+    var url =
+        Uri.parse('$BASE_URL/api/restaurant/${selectedRestaurant.value.id}');
+
+    var res = await http.post(
+      url,
+      headers: {
+        'Content-type': CONTENT_TYPE,
+        AUTHORIZATION: '$BEARER${_pref.getString(TOKEN)}',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      listFood.clear();
+      var tmp = jsonDecode(res.body)['data'] as List;
+      for (var i = 0; i < tmp.length; i++) {
+        Food food = Food(
+          id: tmp[i]['_id'],
+          category: tmp[i]['category'],
+          description: tmp[i]['description'],
+          ingredient: tmp[i]['ingredients'],
+          name: tmp[i]['name'],
+          restaurantId: tmp[i]['restaurantId'],
+          price: double.parse(tmp[i]['price'].toString()),
+        );
+        listFood.add(food);
+      }
     }
   }
 }

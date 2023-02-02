@@ -1,4 +1,4 @@
-const BASE_URL = 'https://e922-14-161-6-79.ap.ngrok.io';
+const BASE_URL = 'https://8ac3-14-161-6-79.ap.ngrok.io';
 const TOKEN = 'token';
 const BEARER = 'Bearer ';
 const AUTHORIZATION = "Authorization";

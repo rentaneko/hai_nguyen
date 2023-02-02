@@ -17,6 +17,8 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_easyloading: ^3.0.5
   http: ^0.13.5
+  data_table_2: ^2.3.10
+  flutter_format_money_vietnam: ^0.0.2
 
 dev_dependencies:
   flutter_test:

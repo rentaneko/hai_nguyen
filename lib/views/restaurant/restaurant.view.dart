@@ -19,11 +19,42 @@ class RestaurantPage extends GetWidget<RestaurantController> {
               const SizedBox(),
               Text('Thêm một nhà hàng mới'),
               ElevatedButton(
-                // onPressed: () => controller.addRestaurant(),
                 onPressed: () => openDialog(),
                 child: Text('Thêm nhà hàng'),
               ),
             ],
+          ),
+          Obx(
+            () => controller.isLoading.value
+                ? const Center(child: CircularProgressIndicator())
+                : DataTable(
+                    border: TableBorder.all(),
+                    columns: const [
+                      DataColumn(label: Text('Tên nhà hàng')),
+                      DataColumn(label: Text('Loại nhà hàng')),
+                      DataColumn(label: Text('Vị trí')),
+                      DataColumn(label: Text('Khoảng cách'), numeric: true),
+                      DataColumn(
+                          label: Text('Thời gian giao hàng'), numeric: true),
+                    ],
+                    rows: List<DataRow>.generate(
+                      controller.listRestaurant.length,
+                      (index) => DataRow(
+                        cells: [
+                          DataCell(
+                              Text(controller.listRestaurant[index].name!)),
+                          DataCell(
+                              Text(controller.listRestaurant[index].type!)),
+                          DataCell(Text(index.toString())),
+                          DataCell(Text(controller
+                              .listRestaurant[index].distance
+                              .toString())),
+                          DataCell(Text(controller.listRestaurant[index].time
+                              .toString())),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -154,7 +185,7 @@ class RestaurantPage extends GetWidget<RestaurantController> {
       );
 
   DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
-        child: Text(item),
         value: item,
+        child: Text(item),
       );
 }

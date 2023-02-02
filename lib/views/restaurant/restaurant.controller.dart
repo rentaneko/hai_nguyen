@@ -22,47 +22,6 @@ class RestaurantController extends GetxController {
   late TextEditingController locationCtrl;
   late TextEditingController distanceCtrl;
 
-  Future<void> addFoodToRestaurant() async {
-    _preferences = await SharedPreferences.getInstance();
-    var url = Uri.https(BASE_URL, '/api/food/addFoodId');
-    var response = await http.post(
-      url,
-      headers: {AUTHORIZATION: '$BEARER${_preferences.getString(TOKEN)}'},
-      body: jsonEncode(
-        <String, dynamic>{
-          "restaurantId": "63a73fa3fd177603e0f2f403",
-          "name": "Combo Burger",
-          "price": 87000,
-          "image": "D5",
-          "category": "Combo Burger",
-          "description": "Combo Cơm Gà Rán",
-          "ingredients":
-              "1 Burger Zinger/Burger Gà Quay Flava/Burger Tôm + 1 Miếng Gà Rán + 1 Lon Pepsi"
-        },
-      ),
-    );
-    if (response.statusCode == 200) {
-      print('STATUS: ${jsonDecode(response.body)['message']}');
-    } else {
-      log('STATUS: ${response.statusCode}');
-      print(response.request);
-      print(
-        jsonEncode(
-          <String, dynamic>{
-            "restaurantId": "63a73fa3fd177603e0f2f403",
-            "name": "Combo Burger",
-            "price": 87000,
-            "image": "D5",
-            "category": "Combo Burger",
-            "description": "Combo Cơm Gà Rán",
-            "ingredients":
-                "1 Burger Zinger/Burger Gà Quay Flava/Burger Tôm + 1 Miếng Gà Rán + 1 Lon Pepsi"
-          },
-        ),
-      );
-    }
-  }
-
   Future<void> addRestaurant() async {
     showLoading('Đang thêm vào hệ thống');
     _preferences = await SharedPreferences.getInstance();
@@ -89,11 +48,45 @@ class RestaurantController extends GetxController {
     );
     if (response.statusCode == 200) {
       hideLoading();
+      listRestaurant.clear();
+      getAllRestaurant();
       goBack();
       showToast('Thêm nhà hàng thành công');
     } else {
       hideLoading();
       log('STATUS: ${response.statusCode}');
+    }
+  }
+
+  Future<void> getAllRestaurant() async {
+    _preferences = await SharedPreferences.getInstance();
+    var url = Uri.parse('$BASE_URL/api/restaurant');
+
+    var res = await http.post(
+      url,
+      headers: {
+        'Content-type': CONTENT_TYPE,
+        AUTHORIZATION: '$BEARER${_preferences.getString(TOKEN)}',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      var tmp = jsonDecode(res.body)['data'] as List;
+      for (var i = 0; i < tmp.length; i++) {
+        Restaurant restaurant = Restaurant();
+        restaurant.id = tmp[i]['_id'];
+        restaurant.name = tmp[i]['name'];
+        restaurant.type = tmp[i]['type'];
+        restaurant.tags =
+            List.from(tmp[i]['tags'] as List).map((e) => e.toString()).toList();
+        restaurant.distance = double.parse(tmp[i]['distance'].toString());
+        restaurant.time = int.parse(tmp[i]['time'].toString());
+        restaurant.categories = List.from(tmp[i]['categories'] as List)
+            .map((e) => e.toString())
+            .toList();
+        listRestaurant.add(restaurant);
+      }
+      isLoading.value = false;
     }
   }
 
@@ -172,6 +165,7 @@ class RestaurantController extends GetxController {
     nameResCtrl = TextEditingController();
     locationCtrl = TextEditingController();
     distanceCtrl = TextEditingController();
+    getAllRestaurant();
     super.onInit();
   }
 

@@ -8,7 +8,20 @@ class BillPage extends GetWidget<BillController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.purpleAccent,
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Obx(
+            () => controller.isLoading.value == true
+                ? const Center(child: CircularProgressIndicator())
+                : Text(controller.listBill.length.toString()),
+          ),
+          ElevatedButton(
+            onPressed: () => controller.getAllBill(),
+            child: Text('Test'),
+          ),
+        ],
+      ),
     );
   }
 }
