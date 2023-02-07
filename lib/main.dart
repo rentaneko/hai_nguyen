@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       getPages: RoutesApp.route,
       debugShowCheckedModeBanner: false,
-      initialRoute: ROUTE_LOGIN,
+      initialRoute: ROUTE_HOME,
       builder: (_, child) => FlutterEasyLoading(child: child),
     );
   }

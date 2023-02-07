@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_format_money_vietnam/flutter_format_money_vietnam.dart';
 import 'package:get/get.dart';
+import 'package:hai_nguyen/@share/constants/value.constant.dart';
+import 'package:hai_nguyen/@share/styles/color.dart';
 import 'package:hai_nguyen/@share/utils/utils.dart';
 import 'package:hai_nguyen/model/restaurant.model.dart';
 import 'package:hai_nguyen/views/food/food.controller.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class FoodPage extends GetWidget<FoodController> {
   const FoodPage({super.key});
@@ -14,35 +17,105 @@ class FoodPage extends GetWidget<FoodController> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Row(
-            children: [
-              Text('Nhà hàng'),
-              Obx(
-                () => controller.isLoading.value
-                    ? const Center(child: CircularProgressIndicator())
-                    : DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          items: controller.listRestaurant
-                              .map((restaurant) => buildMenuItem(restaurant))
-                              .toList(),
-                          onChanged: (value) {
-                            controller.selectedRestaurant.value = value!;
-                            controller.getFoodOfRestaurant();
-                          },
-                          value: controller.selectedRestaurant.value,
+          SizedBox(height: responsiveHeight(20)),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: responsiveWidth(24)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  'Danh sách món ăn',
+                  style: TextStyle(
+                    color: AppColor.black,
+                    fontSize: responsiveFont(42),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+                Obx(
+                  () => controller.isLoading.value
+                      ? DropdownButtonHideUnderline(
+                          child: DropdownButton2(
+                            items:
+                                tags.map((item) => buildWaiting(item)).toList(),
+                            value: tags[0],
+                            onChanged: (value) {},
+                            buttonHeight: responsiveHeight(48),
+                            buttonWidth: responsiveWidth(220),
+                            itemHeight: responsiveHeight(48),
+                            dropdownMaxHeight: responsiveHeight(300),
+                            alignment: Alignment.center,
+                            scrollbarAlwaysShow: true,
+                            buttonDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: AppColor.border),
+                            ),
+                            dropdownWidth: responsiveWidth(220),
+                          ),
+                        )
+                      : DropdownButtonHideUnderline(
+                          child: DropdownButton2(
+                            items: controller.listRestaurant
+                                .map((restaurant) => buildMenuItem(restaurant))
+                                .toList(),
+                            onChanged: (value) {
+                              controller.selectedRestaurant.value = value!;
+                              controller.getFoodOfRestaurant();
+                            },
+                            value: controller.selectedRestaurant.value,
+                            buttonHeight: responsiveHeight(48),
+                            buttonWidth: responsiveWidth(220),
+                            itemHeight: responsiveHeight(48),
+                            dropdownMaxHeight: responsiveHeight(300),
+                            alignment: Alignment.center,
+                            scrollbarAlwaysShow: true,
+                            buttonDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: AppColor.border),
+                            ),
+                            dropdownWidth: responsiveWidth(220),
+                          ),
                         ),
-                      ),
-              ),
-              ElevatedButton(
-                onPressed: () => openDialog(),
-                child: Text('Thêm món ăn'),
-              ),
-            ],
+                ),
+                ElevatedButton(
+                  onPressed: () => openDialog(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.secondary,
+                    fixedSize: Size(responsiveWidth(240), responsiveHeight(52)),
+                  ),
+                  child: Text(
+                    'Thêm món ăn',
+                    style: TextStyle(
+                      color: AppColor.black,
+                      fontSize: responsiveFont(24),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          Text('Danh sách món ăn'),
+          SizedBox(height: responsiveHeight(20)),
           Obx(
             () => controller.isLoadingFood.value == true
-                ? const Center(child: CircularProgressIndicator())
+                ? DataTable(
+                    border: TableBorder.all(color: AppColor.border),
+                    headingRowColor: MaterialStateProperty.resolveWith<Color>(
+                        (states) => AppColor.header),
+                    columnSpacing: responsiveWidth(74),
+                    columns: const [
+                      DataColumn(label: Text('Tên nhà hàng')),
+                      DataColumn(label: Text('Loại')),
+                      DataColumn(label: Text('Địa chỉ')),
+                      DataColumn(label: Text('Nhãn dán')),
+                      DataColumn(label: Text('Khoảng cách'), numeric: true),
+                      DataColumn(
+                          label: Text('Thời gian giao hàng'), numeric: true),
+                      DataColumn(label: Text('Hình ảnh')),
+                    ],
+                    rows: [],
+                  )
                 : (controller.listFood.isEmpty
                     ? Text('No food')
                     : Container(
@@ -244,5 +317,9 @@ class FoodPage extends GetWidget<FoodController> {
       DropdownMenuItem(
         value: restaurant,
         child: Text(restaurant.name!),
+      );
+  DropdownMenuItem<String> buildWaiting(String restaurant) => DropdownMenuItem(
+        value: restaurant,
+        child: Text(restaurant),
       );
 }

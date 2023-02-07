@@ -21,6 +21,7 @@ class RestaurantController extends GetxController {
   late TextEditingController nameResCtrl;
   late TextEditingController locationCtrl;
   late TextEditingController distanceCtrl;
+  late TextEditingController pictureCtrl;
 
   Future<void> addRestaurant() async {
     showLoading('Đang thêm vào hệ thống');
@@ -41,7 +42,11 @@ class RestaurantController extends GetxController {
           "location": locationCtrl.text.trim(),
           "distance": distanceCtrl.text.trim(),
           "time": 30,
-          "images": {"logo": "kfc", "poster": "kfc", "cover": "kfc"},
+          "images": {
+            "logo": pictureCtrl.text.trim(),
+            "poster": pictureCtrl.text.trim(),
+            "cover": pictureCtrl.text.trim(),
+          },
           "categories": category.toList(),
         },
       ),
@@ -165,6 +170,7 @@ class RestaurantController extends GetxController {
     nameResCtrl = TextEditingController();
     locationCtrl = TextEditingController();
     distanceCtrl = TextEditingController();
+    pictureCtrl = TextEditingController();
     getAllRestaurant();
     super.onInit();
   }
@@ -174,6 +180,7 @@ class RestaurantController extends GetxController {
     nameResCtrl.dispose();
     locationCtrl.dispose();
     distanceCtrl.dispose();
+    pictureCtrl.dispose();
     super.onClose();
   }
 }

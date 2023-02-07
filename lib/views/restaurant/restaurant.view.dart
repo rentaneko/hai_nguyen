@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hai_nguyen/@share/constants/value.constant.dart';
+import 'package:hai_nguyen/@share/styles/color.dart';
 import 'package:hai_nguyen/@share/utils/utils.dart';
 import 'package:hai_nguyen/views/restaurant/restaurant.controller.dart';
 
@@ -13,29 +14,75 @@ class RestaurantPage extends GetWidget<RestaurantController> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(),
-              Text('Thêm một nhà hàng mới'),
-              ElevatedButton(
-                onPressed: () => openDialog(),
-                child: Text('Thêm nhà hàng'),
-              ),
-            ],
+          SizedBox(height: responsiveHeight(20)),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: responsiveWidth(24)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const SizedBox(),
+                Text(
+                  'Danh sách nhà hàng',
+                  style: TextStyle(
+                    color: AppColor.black,
+                    fontSize: responsiveFont(42),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => openDialog(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.secondary,
+                    fixedSize: Size(responsiveWidth(240), responsiveHeight(52)),
+                  ),
+                  child: Text(
+                    'Thêm nhà hàng',
+                    style: TextStyle(
+                      color: AppColor.black,
+                      fontSize: responsiveFont(24),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+          SizedBox(height: responsiveHeight(20)),
           Obx(
             () => controller.isLoading.value
-                ? const Center(child: CircularProgressIndicator())
-                : DataTable(
-                    border: TableBorder.all(),
+                ? DataTable(
+                    border: TableBorder.all(color: AppColor.border),
+                    headingRowColor: MaterialStateProperty.resolveWith<Color>(
+                        (states) => AppColor.header),
+                    columnSpacing: responsiveWidth(74),
                     columns: const [
                       DataColumn(label: Text('Tên nhà hàng')),
-                      DataColumn(label: Text('Loại nhà hàng')),
-                      DataColumn(label: Text('Vị trí')),
+                      DataColumn(label: Text('Loại')),
+                      DataColumn(label: Text('Địa chỉ')),
+                      DataColumn(label: Text('Danh mục')),
                       DataColumn(label: Text('Khoảng cách'), numeric: true),
                       DataColumn(
                           label: Text('Thời gian giao hàng'), numeric: true),
+                      DataColumn(label: Text('Hình ảnh')),
+                    ],
+                    rows: [],
+                  )
+                : DataTable(
+                    border: TableBorder.all(color: AppColor.border),
+                    headingRowColor: MaterialStateProperty.resolveWith<Color>(
+                        (states) => AppColor.header),
+                    columnSpacing: responsiveWidth(74),
+                    columns: const [
+                      DataColumn(label: Text('Tên nhà hàng')),
+                      DataColumn(label: Text('Loại')),
+                      DataColumn(label: Text('Địa chỉ')),
+                      DataColumn(label: Text('Danh mục')),
+                      DataColumn(label: Text('Khoảng cách'), numeric: true),
+                      DataColumn(
+                          label: Text('Thời gian giao hàng'), numeric: true),
+                      DataColumn(label: Text('Hình ảnh')),
                     ],
                     rows: List<DataRow>.generate(
                       controller.listRestaurant.length,
@@ -64,14 +111,28 @@ class RestaurantPage extends GetWidget<RestaurantController> {
   openDialog() => Get.dialog(
         barrierDismissible: false,
         AlertDialog(
-          title: Text('Thêm một nhà hàng mới'),
+          title: Text(
+            'Nhập thông tin của nhà hàng',
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                fontSize: responsiveFont(22),
+                color: AppColor.black),
+          ),
           content: Container(
-            color: Colors.white,
             height: 500,
             width: 700,
+            color: AppColor.white,
             child: ListView(
               children: [
-                Text('Nhập tên nhà hàng'),
+                Text(
+                  'Nhập tên nhà hàng',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
                 TextFormField(
                   controller: controller.nameResCtrl,
                   // validator: (_) => controller.validateUsername(),
@@ -84,7 +145,14 @@ class RestaurantPage extends GetWidget<RestaurantController> {
                         borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
-                Text('Nhập địa chỉ nhà hàng'),
+                Text(
+                  'Nhập địa chỉ nhà hàng',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
                 TextFormField(
                   controller: controller.locationCtrl,
                   // validator: (_) => controller.validateUsername(),
@@ -97,7 +165,14 @@ class RestaurantPage extends GetWidget<RestaurantController> {
                         borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
-                Text('Nhập khoảng cách nhà hàng'),
+                Text(
+                  'Nhập khoảng cách nhà hàng',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
                 TextFormField(
                   controller: controller.distanceCtrl,
                   // validator: (_) => controller.validateUsername(),
@@ -110,7 +185,34 @@ class RestaurantPage extends GetWidget<RestaurantController> {
                         borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
-                Text('Chọn nhãn thẻ'),
+                Text(
+                  'Thêm đường dẫn hình ảnh',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
+                TextFormField(
+                  controller: controller.pictureCtrl,
+                  // validator: (_) => controller.validateUsername(),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: responsiveHeight(2),
+                      horizontal: responsiveWidth(8),
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4)),
+                  ),
+                ),
+                Text(
+                  'Chọn nhãn thẻ',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
                 GridView.builder(
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -140,7 +242,14 @@ class RestaurantPage extends GetWidget<RestaurantController> {
                     );
                   },
                 ),
-                Text('Loại nhà hàng'),
+                Text(
+                  'Loại nhà hàng',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
                 GridView.builder(
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(

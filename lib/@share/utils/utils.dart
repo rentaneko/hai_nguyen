@@ -2,9 +2,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 // ignore: constant_identifier_names
-const DESIGN_WIDTH = 375;
+const DESIGN_WIDTH = 1920;
 // ignore: constant_identifier_names
-const DESIGN_HEIGHT = 812;
+const DESIGN_HEIGHT = 1080;
 
 double responsiveWidth(double value) =>
     value != 0 ? (Get.width * value) / DESIGN_WIDTH : Get.width;
