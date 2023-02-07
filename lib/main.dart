@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Food Delivery - Giao hàng nhanh, miễn phí vận chuyển',
       getPages: RoutesApp.route,
       debugShowCheckedModeBanner: false,
-      initialRoute: ROUTE_HOME,
+      initialRoute: ROUTE_LOGIN,
       builder: (_, child) => FlutterEasyLoading(child: child),
     );
   }

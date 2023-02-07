@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_format_money_vietnam/flutter_format_money_vietnam.dart';
 import 'package:get/get.dart';
 import 'package:hai_nguyen/@share/constants/value.constant.dart';
+import 'package:hai_nguyen/@share/routes/routes.dart';
 import 'package:hai_nguyen/@share/styles/color.dart';
 import 'package:hai_nguyen/@share/utils/utils.dart';
 import 'package:hai_nguyen/model/restaurant.model.dart';
@@ -33,26 +35,8 @@ class FoodPage extends GetWidget<FoodController> {
                   ),
                 ),
                 Obx(
-                  () => controller.isLoading.value
-                      ? DropdownButtonHideUnderline(
-                          child: DropdownButton2(
-                            items:
-                                tags.map((item) => buildWaiting(item)).toList(),
-                            value: tags[0],
-                            onChanged: (value) {},
-                            buttonHeight: responsiveHeight(48),
-                            buttonWidth: responsiveWidth(220),
-                            itemHeight: responsiveHeight(48),
-                            dropdownMaxHeight: responsiveHeight(300),
-                            alignment: Alignment.center,
-                            scrollbarAlwaysShow: true,
-                            buttonDecoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: AppColor.border),
-                            ),
-                            dropdownWidth: responsiveWidth(220),
-                          ),
-                        )
+                  () => controller.isLoading.value == true
+                      ? const Center(child: CircularProgressIndicator())
                       : DropdownButtonHideUnderline(
                           child: DropdownButton2(
                             items: controller.listRestaurant
@@ -99,33 +83,20 @@ class FoodPage extends GetWidget<FoodController> {
           SizedBox(height: responsiveHeight(20)),
           Obx(
             () => controller.isLoadingFood.value == true
-                ? DataTable(
-                    border: TableBorder.all(color: AppColor.border),
-                    headingRowColor: MaterialStateProperty.resolveWith<Color>(
-                        (states) => AppColor.header),
-                    columnSpacing: responsiveWidth(74),
-                    columns: const [
-                      DataColumn(label: Text('Tên nhà hàng')),
-                      DataColumn(label: Text('Loại')),
-                      DataColumn(label: Text('Địa chỉ')),
-                      DataColumn(label: Text('Nhãn dán')),
-                      DataColumn(label: Text('Khoảng cách'), numeric: true),
-                      DataColumn(
-                          label: Text('Thời gian giao hàng'), numeric: true),
-                      DataColumn(label: Text('Hình ảnh')),
-                    ],
-                    rows: [],
-                  )
+                ? const Center(child: CircularProgressIndicator())
                 : (controller.listFood.isEmpty
                     ? Text('No food')
                     : Container(
                         width: getWidthDevice(),
-                        margin: EdgeInsets.symmetric(
-                            horizontal: responsiveWidth(8)),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: responsiveWidth(32),
+                        ),
                         child: DataTable(
-                          border: TableBorder.all(),
-                          headingRowHeight: 80,
-                          columnSpacing: 16,
+                          border: TableBorder.all(color: AppColor.border),
+                          headingRowColor:
+                              MaterialStateProperty.resolveWith<Color>(
+                                  (states) => AppColor.header),
+                          columnSpacing: responsiveWidth(74),
                           headingTextStyle: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
                           columns: const [
@@ -151,11 +122,10 @@ class FoodPage extends GetWidget<FoodController> {
                                   width: 90, child: Text('Thuộc loại')),
                             ),
                             DataColumn(
-                                label: SizedBox(
-                                    width: 150, child: Text('Miêu tả'))),
-                            DataColumn(
-                                label: SizedBox(
-                                    width: 150, child: Text('Nguyên liệu'))),
+                              label:
+                                  SizedBox(width: 150, child: Text('Miêu tả')),
+                            ),
+                            DataColumn(label: Text('Quản lý')),
                           ],
                           rows: List<DataRow>.generate(
                             controller.listFood.length,
@@ -166,8 +136,17 @@ class FoodPage extends GetWidget<FoodController> {
                                     height: 75,
                                     width: 75,
                                     child: Center(
-                                        child: Image.network(
-                                            'https://o.vdoc.vn/data/image/2022/08/25/avatar-cute-cho-co-nang-nghien-tra-sua.jpg')),
+                                        child: CachedNetworkImage(
+                                      imageUrl:
+                                          '${controller.listFood[index].image}',
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                              child:
+                                                  CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          Image.network(
+                                              'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1200px-No_image_3x4.svg.png'),
+                                    )),
                                   ),
                                 ),
                                 DataCell(
@@ -178,6 +157,7 @@ class FoodPage extends GetWidget<FoodController> {
                                       child: Text(
                                         controller.listFood[index].name!,
                                         maxLines: 3,
+                                        textAlign: TextAlign.start,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -200,22 +180,41 @@ class FoodPage extends GetWidget<FoodController> {
                                     ),
                                   ),
                                 ),
-                                DataCell(SizedBox(
-                                  width: 300,
-                                  child: Text(
-                                    controller.listFood[index].description!,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
+                                DataCell(
+                                  SizedBox(
+                                    width: 300,
+                                    child: Text(
+                                      controller.listFood[index].description!,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                )),
-                                DataCell(SizedBox(
-                                  width: 300,
-                                  child: Text(
-                                    controller.listFood[index].ingredient!,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
+                                ),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () => goTo(
+                                            screen: ROUTE_FOOD_DETAIL,
+                                            argument:
+                                                controller.listFood[index]),
+                                        child: Text(
+                                          'Xem chi tiết',
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: responsiveFont(16),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: Image.asset(
+                                            'assets/icons/remove.png'),
+                                      ),
+                                    ],
                                   ),
-                                )),
+                                ),
                               ],
                             ),
                           ),
@@ -230,14 +229,30 @@ class FoodPage extends GetWidget<FoodController> {
   openDialog() => Get.dialog(
         barrierDismissible: false,
         AlertDialog(
-          title: Text('Thêm một món ăn mới'),
+          title: Text(
+            'Nhập thông tin của món ăn',
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                fontSize: responsiveFont(22),
+                color: AppColor.black),
+          ),
           content: Container(
             color: Colors.white,
-            height: 500,
-            width: 700,
+            height: responsiveHeight(500),
+            width: responsiveWidth(700),
             child: ListView(
               children: [
-                Text('Nhập tên món ăn'),
+                SizedBox(height: responsiveHeight(24)),
+                Text(
+                  'Nhập tên món ăn',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
+                SizedBox(height: responsiveHeight(16)),
                 TextFormField(
                   controller: controller.nameCtrl,
                   // validator: (_) => controller.validateUsername(),
@@ -250,33 +265,49 @@ class FoodPage extends GetWidget<FoodController> {
                         borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
-                Text('Nhập loại'),
-                TextFormField(
-                  controller: controller.category,
-                  // validator: (_) => controller.validateUsername(),
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: responsiveHeight(2),
-                      horizontal: responsiveWidth(8),
+                SizedBox(height: responsiveHeight(24)),
+                Text(
+                  'Chọn thể loại',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
+                SizedBox(height: responsiveHeight(16)),
+                Obx(
+                  () => DropdownButtonHideUnderline(
+                    child: DropdownButton2(
+                      items:
+                          categories.map((item) => buildWaiting(item)).toList(),
+                      value: controller.selectedCategory.value,
+                      onChanged: (value) {
+                        controller.selectedCategory.value = value!;
+                      },
+                      buttonHeight: responsiveHeight(54),
+                      buttonWidth: double.infinity,
+                      itemHeight: responsiveHeight(54),
+                      dropdownMaxHeight: responsiveHeight(300),
+                      alignment: Alignment.center,
+                      scrollbarAlwaysShow: true,
+                      buttonDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColor.border),
+                      ),
+                      dropdownWidth: responsiveWidth(700),
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
-                Text('Nhập miêu tả'),
-                TextFormField(
-                  controller: controller.description,
-                  // validator: (_) => controller.validateUsername(),
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: responsiveHeight(2),
-                      horizontal: responsiveWidth(8),
-                    ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4)),
-                  ),
+                SizedBox(height: responsiveHeight(16)),
+                Text(
+                  'Nhập giá tiền',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
                 ),
-                Text('Nhập giá'),
+                SizedBox(height: responsiveHeight(16)),
                 TextFormField(
                   controller: controller.price,
                   // validator: (_) => controller.validateUsername(),
@@ -289,9 +320,62 @@ class FoodPage extends GetWidget<FoodController> {
                         borderRadius: BorderRadius.circular(4)),
                   ),
                 ),
-                Text('Nhập combo(nếu có)'),
+                SizedBox(height: responsiveHeight(24)),
+                Text(
+                  'Nhập miêu tả',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
+                SizedBox(height: responsiveHeight(16)),
+                TextFormField(
+                  controller: controller.description,
+                  // validator: (_) => controller.validateUsername(),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: responsiveHeight(2),
+                      horizontal: responsiveWidth(8),
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4)),
+                  ),
+                ),
+                SizedBox(height: responsiveHeight(24)),
+                Text(
+                  'Nhập combo (nếu có)',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
+                SizedBox(height: responsiveHeight(16)),
                 TextFormField(
                   controller: controller.ingredients,
+                  // validator: (_) => controller.validateUsername(),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: responsiveHeight(2),
+                      horizontal: responsiveWidth(8),
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4)),
+                  ),
+                ),
+                SizedBox(height: responsiveHeight(24)),
+                Text(
+                  'Nhập đường dẫn hình ảnh',
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      fontSize: responsiveFont(16),
+                      color: AppColor.black),
+                ),
+                SizedBox(height: responsiveHeight(16)),
+                TextFormField(
+                  controller: controller.image,
                   // validator: (_) => controller.validateUsername(),
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(

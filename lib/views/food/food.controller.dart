@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:hai_nguyen/@share/constants/url.constant.dart';
+import 'package:hai_nguyen/@share/constants/value.constant.dart';
 import 'package:hai_nguyen/@share/utils/utils.dart';
 import 'package:hai_nguyen/model/food.model.dart';
 import 'package:hai_nguyen/model/restaurant.model.dart';
@@ -12,14 +13,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FoodController extends GetxController {
   late TextEditingController nameCtrl;
   late TextEditingController price;
-  late TextEditingController category;
   late TextEditingController description;
   late TextEditingController ingredients;
+  late TextEditingController image;
   late SharedPreferences _pref;
 
   var listRestaurant = <Restaurant>[].obs;
   var listFood = <Food>[].obs;
-
+  var selectedCategory = ''.obs;
   var selectedRestaurant = Restaurant().obs;
 
   var isLoading = true.obs;
@@ -29,9 +30,10 @@ class FoodController extends GetxController {
   void onInit() {
     nameCtrl = TextEditingController();
     price = TextEditingController();
-    category = TextEditingController();
+    selectedCategory.value = categories[0];
     description = TextEditingController();
     ingredients = TextEditingController();
+    image = TextEditingController();
 
     Future.wait(
       [
@@ -48,9 +50,9 @@ class FoodController extends GetxController {
   void onClose() {
     nameCtrl.dispose();
     price.dispose();
-    category.dispose();
     description.dispose();
     ingredients.dispose();
+    image.dispose();
 
     super.onClose();
   }
@@ -69,8 +71,8 @@ class FoodController extends GetxController {
           "restaurantId": selectedRestaurant.value.id,
           "name": nameCtrl.text.trim(),
           "price": int.parse(price.text.trim()),
-          "image": "D5",
-          "category": category.text.trim(),
+          "image": image.text.trim(),
+          "category": selectedCategory.value.trim(),
           "description": description.text.trim(),
           "ingredients":
               ingredients.text.isEmpty ? '' : ingredients.text.trim(),
@@ -142,6 +144,7 @@ class FoodController extends GetxController {
           ingredient: tmp[i]['ingredients'],
           name: tmp[i]['name'],
           restaurantId: tmp[i]['restaurantId'],
+          image: tmp[i]['image'],
           price: double.parse(tmp[i]['price'].toString()),
         );
         listFood.add(food);

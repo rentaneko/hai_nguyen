@@ -48,6 +48,7 @@ class BillController extends GetxController {
           item.id = tmp[i]['_id'];
           item.itemsTotal = tmp[i]['itemsTotal'];
           item.grandTotal = tmp[i]['grandTotal'];
+          item.discount = tmp[i]['discount'];
           item.username = tmp[i]['username'];
           item.cartItems = List.from(tmp[i]['cartItems'] as List)
               .map((e) => CartItem.fromJson(e))

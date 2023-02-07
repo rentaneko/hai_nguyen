@@ -5,10 +5,12 @@ class Bill {
   String? username;
   double? itemsTotal;
   double? grandTotal;
+  double? discount;
   List<CartItem>? cartItems;
 
   Bill({
     this.cartItems,
+    this.discount,
     this.grandTotal,
     this.id,
     this.itemsTotal,

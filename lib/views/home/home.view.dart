@@ -224,7 +224,7 @@ class HomePage extends GetWidget<HomeController> {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
+                    flex: 4,
                     child: IndexedStack(
                       index: controller.pageIndex.value,
                       children: const [

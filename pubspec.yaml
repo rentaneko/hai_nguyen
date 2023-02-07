@@ -20,6 +20,8 @@ dependencies:
   data_table_2: ^2.3.10
   flutter_format_money_vietnam: ^0.0.2
   dropdown_button2: ^1.9.2
+  cached_network_image: ^3.2.3
+  flutter_launcher_icons: ^0.11.0
 
 dev_dependencies:
   flutter_test:

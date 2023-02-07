@@ -22,6 +22,8 @@ class RestaurantController extends GetxController {
   late TextEditingController locationCtrl;
   late TextEditingController distanceCtrl;
   late TextEditingController pictureCtrl;
+  late TextEditingController logoCtrl;
+  late TextEditingController posterCtrl;
 
   Future<void> addRestaurant() async {
     showLoading('Đang thêm vào hệ thống');
@@ -82,6 +84,10 @@ class RestaurantController extends GetxController {
         restaurant.id = tmp[i]['_id'];
         restaurant.name = tmp[i]['name'];
         restaurant.type = tmp[i]['type'];
+        restaurant.location = tmp[i]['location'];
+        restaurant.logo = tmp[i]['images']['logo'];
+        restaurant.image = tmp[i]['images']['cover'];
+        restaurant.poster = tmp[i]['images']['poster'];
         restaurant.tags =
             List.from(tmp[i]['tags'] as List).map((e) => e.toString()).toList();
         restaurant.distance = double.parse(tmp[i]['distance'].toString());
@@ -171,6 +177,8 @@ class RestaurantController extends GetxController {
     locationCtrl = TextEditingController();
     distanceCtrl = TextEditingController();
     pictureCtrl = TextEditingController();
+    logoCtrl = TextEditingController();
+    posterCtrl = TextEditingController();
     getAllRestaurant();
     super.onInit();
   }
@@ -181,6 +189,8 @@ class RestaurantController extends GetxController {
     locationCtrl.dispose();
     distanceCtrl.dispose();
     pictureCtrl.dispose();
+    posterCtrl.dispose();
+    logoCtrl.dispose();
     super.onClose();
   }
 }
