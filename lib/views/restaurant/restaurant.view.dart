@@ -55,81 +55,108 @@ class RestaurantPage extends GetWidget<RestaurantController> {
           Obx(
             () => controller.isLoading.value
                 ? const Center(child: CircularProgressIndicator())
-                : Expanded(
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: responsiveWidth(32)),
-                      child: DataTable(
-                        border: TableBorder.all(color: AppColor.border),
-                        headingRowColor:
-                            MaterialStateProperty.resolveWith<Color>(
-                                (states) => AppColor.header),
-                        columns: const [
-                          DataColumn(label: Text('Nhãn hiệu')),
-                          DataColumn(label: Text('Tên nhà hàng')),
-                          DataColumn(label: Text('Loại')),
-                          DataColumn(label: Text('Địa chỉ')),
-                          DataColumn(label: Text('Quản lý')),
+                : (controller.listRestaurant.isEmpty
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: responsiveHeight(36)),
+                          Image.asset(
+                            'assets/icons/no-home.png',
+                            height: responsiveHeight(375),
+                            width: responsiveWidth(375),
+                          ),
+                          SizedBox(height: responsiveHeight(36)),
+                          Text(
+                              'Hiện chưa có nhà hàng nào trong dữ liệu hệ thống'),
+                          SizedBox(height: responsiveHeight(16)),
+                          Text('Vui lòng thêm dữ liệu vào hệ thống'),
                         ],
-                        rows: List<DataRow>.generate(
-                          controller.listRestaurant.length,
-                          (index) => DataRow(
-                            cells: [
-                              DataCell(
-                                SizedBox(
-                                  height: responsiveHeight(75),
-                                  width: responsiveWidth(75),
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        '${controller.listRestaurant[index].logo}',
-                                    placeholder: (context, url) => const Center(
-                                        child: CircularProgressIndicator()),
-                                    errorWidget: (context, url, error) =>
-                                        Image.network(
-                                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO7xDFltiJ7FBTAkI6B4zQ3zC-nzvvPWtZ2WZiK8lNEXarDj8_avGsZPZpNPdPf_FX3-4&usqp=CAU'),
-                                  ),
-                                ),
-                              ),
-                              DataCell(Text(controller
-                                  .listRestaurant[index].name
-                                  .toString())),
-                              DataCell(Text(controller
-                                  .listRestaurant[index].type
-                                  .toString())),
-                              DataCell(Text(controller
-                                  .listRestaurant[index].location
-                                  .toString())),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () => goTo(
-                                          screen: ROUTE_RES_DETAIL,
-                                          argument:
-                                              controller.listRestaurant[index]),
-                                      child: Text(
-                                        'Xem chi tiết',
-                                        style: TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontSize: responsiveFont(16),
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                      )
+                    : Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: responsiveWidth(32)),
+                          child: DataTable(
+                            border: TableBorder.all(color: AppColor.border),
+                            headingRowColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                                    (states) => AppColor.header),
+                            columns: const [
+                              DataColumn(label: Text('Nhãn hiệu')),
+                              DataColumn(label: Text('Tên nhà hàng')),
+                              DataColumn(label: Text('Loại')),
+                              DataColumn(label: Text('Địa chỉ')),
+                              DataColumn(label: Text('Quản lý')),
+                            ],
+                            rows: List<DataRow>.generate(
+                              controller.listRestaurant.length,
+                              (index) => DataRow(
+                                cells: [
+                                  DataCell(
+                                    SizedBox(
+                                      height: responsiveHeight(75),
+                                      width: responsiveWidth(75),
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            '${controller.listRestaurant[index].logo}',
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                        errorWidget: (context, url, error) =>
+                                            Image.network(
+                                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO7xDFltiJ7FBTAkI6B4zQ3zC-nzvvPWtZ2WZiK8lNEXarDj8_avGsZPZpNPdPf_FX3-4&usqp=CAU'),
                                       ),
                                     ),
-                                    IconButton(
-                                      onPressed: () {},
-                                      icon: Image.asset(
-                                          'assets/icons/remove.png'),
+                                  ),
+                                  DataCell(Text(controller
+                                      .listRestaurant[index].name
+                                      .toString())),
+                                  DataCell(Text(controller
+                                      .listRestaurant[index].type
+                                      .toString())),
+                                  DataCell(Text(controller
+                                      .listRestaurant[index].location
+                                      .toString())),
+                                  DataCell(
+                                    Row(
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () => goTo(
+                                              screen: ROUTE_RES_DETAIL,
+                                              argument: controller
+                                                  .listRestaurant[index]),
+                                          child: Text(
+                                            'Xem chi tiết',
+                                            style: TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontSize: responsiveFont(16),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () => openPopup(
+                                              'Chắc chắn xoá nhà hàng này', () {
+                                            controller.deleteRestaurant(
+                                                controller
+                                                    .listRestaurant[index].id!);
+                                            controller.getAllRestaurant();
+                                            goBack();
+                                          }),
+                                          icon: Image.asset(
+                                              'assets/icons/remove.png'),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
+                      )),
           ),
         ],
       ),

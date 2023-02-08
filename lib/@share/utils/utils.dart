@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:hai_nguyen/@share/styles/color.dart';
 
 // ignore: constant_identifier_names
 const DESIGN_WIDTH = 1920;
@@ -39,3 +41,53 @@ showLoading([String? content]) => EasyLoading.show(status: content ?? "");
 hideLoading() => EasyLoading.dismiss();
 
 getArgument() => Get.arguments;
+
+openPopup(String title, VoidCallback function) => Get.dialog(
+      barrierDismissible: false,
+      AlertDialog(
+        title: Text(
+          title,
+          style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              fontSize: responsiveFont(22),
+              color: AppColor.black),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => goBack(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColor.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: AppColor.primary),
+              ),
+            ),
+            child: Text(
+              'Huỷ bỏ',
+              style: TextStyle(
+                color: AppColor.black,
+                fontFamily: 'Inter',
+                fontSize: responsiveFont(16),
+              ),
+            ),
+          ),
+          ElevatedButton(
+              onPressed: function,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Xác nhận',
+                style: TextStyle(
+                  color: AppColor.white,
+                  fontFamily: 'Inter',
+                  fontSize: responsiveFont(16),
+                ),
+              )),
+        ],
+      ),
+    );

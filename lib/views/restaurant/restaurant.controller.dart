@@ -78,26 +78,46 @@ class RestaurantController extends GetxController {
     );
 
     if (res.statusCode == 200) {
-      var tmp = jsonDecode(res.body)['data'] as List;
-      for (var i = 0; i < tmp.length; i++) {
-        Restaurant restaurant = Restaurant();
-        restaurant.id = tmp[i]['_id'];
-        restaurant.name = tmp[i]['name'];
-        restaurant.type = tmp[i]['type'];
-        restaurant.location = tmp[i]['location'];
-        restaurant.logo = tmp[i]['images']['logo'];
-        restaurant.image = tmp[i]['images']['cover'];
-        restaurant.poster = tmp[i]['images']['poster'];
-        restaurant.tags =
-            List.from(tmp[i]['tags'] as List).map((e) => e.toString()).toList();
-        restaurant.distance = double.parse(tmp[i]['distance'].toString());
-        restaurant.time = int.parse(tmp[i]['time'].toString());
-        restaurant.categories = List.from(tmp[i]['categories'] as List)
-            .map((e) => e.toString())
-            .toList();
-        listRestaurant.add(restaurant);
+      listRestaurant.clear();
+      if (jsonDecode(res.body)['data'] != null) {
+        var tmp = jsonDecode(res.body)['data'] as List;
+        for (var i = 0; i < tmp.length; i++) {
+          Restaurant restaurant = Restaurant();
+          restaurant.id = tmp[i]['_id'];
+          restaurant.name = tmp[i]['name'];
+          restaurant.type = tmp[i]['type'];
+          restaurant.location = tmp[i]['location'];
+          restaurant.logo = tmp[i]['images']['logo'];
+          restaurant.image = tmp[i]['images']['cover'];
+          restaurant.poster = tmp[i]['images']['poster'];
+          restaurant.tags = List.from(tmp[i]['tags'] as List)
+              .map((e) => e.toString())
+              .toList();
+          restaurant.distance = double.parse(tmp[i]['distance'].toString());
+          restaurant.time = int.parse(tmp[i]['time'].toString());
+          restaurant.categories = List.from(tmp[i]['categories'] as List)
+              .map((e) => e.toString())
+              .toList();
+          listRestaurant.add(restaurant);
+        }
       }
       isLoading.value = false;
+    }
+  }
+
+  Future<void> deleteRestaurant(String? restaurantId) async {
+    var url = Uri.parse('$BASE_URL/api/restaurant/delete/$restaurantId');
+    _preferences = await SharedPreferences.getInstance();
+    var response = await http.delete(
+      url,
+      headers: {
+        'Content-type': CONTENT_TYPE,
+        AUTHORIZATION: '$BEARER${_preferences.getString(TOKEN)}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      showToast('Xoá nhà hàng thành công');
     }
   }
 

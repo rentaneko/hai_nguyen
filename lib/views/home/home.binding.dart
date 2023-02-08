@@ -8,10 +8,10 @@ import 'package:hai_nguyen/views/user/user.controller.dart';
 class HomeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(RestaurantController());
-    Get.put(BillController());
-    Get.put(FoodController());
-    Get.put(HomeController());
-    Get.put(UserController());
+    Get.lazyPut(() => RestaurantController());
+    Get.lazyPut(() => BillController());
+    Get.lazyPut(() => FoodController());
+    Get.lazyPut(() => UserController());
+    Get.lazyPut(() => HomeController());
   }
 }

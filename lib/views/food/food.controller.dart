@@ -100,22 +100,25 @@ class FoodController extends GetxController {
     );
 
     if (res.statusCode == 200) {
-      var tmp = jsonDecode(res.body)['data'] as List;
-      for (var i = 0; i < tmp.length; i++) {
-        Restaurant restaurant = Restaurant();
-        restaurant.id = tmp[i]['_id'];
-        restaurant.name = tmp[i]['name'];
-        restaurant.type = tmp[i]['type'];
-        restaurant.tags =
-            List.from(tmp[i]['tags'] as List).map((e) => e.toString()).toList();
-        restaurant.distance = double.parse(tmp[i]['distance'].toString());
-        restaurant.time = int.parse(tmp[i]['time'].toString());
-        restaurant.categories = List.from(tmp[i]['categories'] as List)
-            .map((e) => e.toString())
-            .toList();
-        listRestaurant.add(restaurant);
+      if (jsonDecode(res.body)['data'] != null) {
+        var tmp = jsonDecode(res.body)['data'] as List;
+        for (var i = 0; i < tmp.length; i++) {
+          Restaurant restaurant = Restaurant();
+          restaurant.id = tmp[i]['_id'];
+          restaurant.name = tmp[i]['name'];
+          restaurant.type = tmp[i]['type'];
+          restaurant.tags = List.from(tmp[i]['tags'] as List)
+              .map((e) => e.toString())
+              .toList();
+          restaurant.distance = double.parse(tmp[i]['distance'].toString());
+          restaurant.time = int.parse(tmp[i]['time'].toString());
+          restaurant.categories = List.from(tmp[i]['categories'] as List)
+              .map((e) => e.toString())
+              .toList();
+          listRestaurant.add(restaurant);
+        }
+        selectedRestaurant.value = listRestaurant[0];
       }
-      selectedRestaurant.value = listRestaurant[0];
     }
   }
 
@@ -149,6 +152,27 @@ class FoodController extends GetxController {
         );
         listFood.add(food);
       }
+    }
+  }
+
+  Future<void> deleteFood(String? foodId) async {
+    _pref = await SharedPreferences.getInstance();
+    var url = Uri.parse('$BASE_URL/api/food/deleteFood');
+
+    var res = await http.delete(
+      url,
+      headers: {
+        'Content-type': CONTENT_TYPE,
+        AUTHORIZATION: '$BEARER${_pref.getString(TOKEN)}',
+      },
+      body: jsonEncode(<String, String>{
+        "foodId": foodId.toString(),
+        "restaurantId": selectedRestaurant.value.id.toString(),
+      }),
+    );
+
+    if (res.statusCode == 200) {
+      showToast('Xoá món ăn thành công');
     }
   }
 }

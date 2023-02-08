@@ -37,29 +37,32 @@ class FoodPage extends GetWidget<FoodController> {
                 Obx(
                   () => controller.isLoading.value == true
                       ? const Center(child: CircularProgressIndicator())
-                      : DropdownButtonHideUnderline(
-                          child: DropdownButton2(
-                            items: controller.listRestaurant
-                                .map((restaurant) => buildMenuItem(restaurant))
-                                .toList(),
-                            onChanged: (value) {
-                              controller.selectedRestaurant.value = value!;
-                              controller.getFoodOfRestaurant();
-                            },
-                            value: controller.selectedRestaurant.value,
-                            buttonHeight: responsiveHeight(48),
-                            buttonWidth: responsiveWidth(220),
-                            itemHeight: responsiveHeight(48),
-                            dropdownMaxHeight: responsiveHeight(300),
-                            alignment: Alignment.center,
-                            scrollbarAlwaysShow: true,
-                            buttonDecoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: AppColor.border),
-                            ),
-                            dropdownWidth: responsiveWidth(220),
-                          ),
-                        ),
+                      : (controller.listRestaurant.isEmpty
+                          ? const SizedBox()
+                          : DropdownButtonHideUnderline(
+                              child: DropdownButton2(
+                                items: controller.listRestaurant
+                                    .map((restaurant) =>
+                                        buildMenuItem(restaurant))
+                                    .toList(),
+                                onChanged: (value) {
+                                  controller.selectedRestaurant.value = value!;
+                                  controller.getFoodOfRestaurant();
+                                },
+                                value: controller.selectedRestaurant.value,
+                                buttonHeight: responsiveHeight(48),
+                                buttonWidth: responsiveWidth(400),
+                                itemHeight: responsiveHeight(48),
+                                dropdownMaxHeight: responsiveHeight(300),
+                                alignment: Alignment.center,
+                                scrollbarAlwaysShow: true,
+                                buttonDecoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: AppColor.border),
+                                ),
+                                dropdownWidth: responsiveWidth(400),
+                              ),
+                            )),
                 ),
                 ElevatedButton(
                   onPressed: () => openDialog(),
@@ -85,7 +88,22 @@ class FoodPage extends GetWidget<FoodController> {
             () => controller.isLoadingFood.value == true
                 ? const Center(child: CircularProgressIndicator())
                 : (controller.listFood.isEmpty
-                    ? Text('No food')
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: responsiveHeight(36)),
+                          Image.asset(
+                            'assets/icons/no-food.png',
+                            height: responsiveHeight(375),
+                            width: responsiveWidth(375),
+                          ),
+                          SizedBox(height: responsiveHeight(36)),
+                          Text('Hiện chưa có món ăn nào trong nhà hàng này'),
+                          SizedBox(height: responsiveHeight(16)),
+                          Text('Vui lòng thêm món ăn vào nhà hàng'),
+                        ],
+                      )
                     : Container(
                         width: getWidthDevice(),
                         padding: EdgeInsets.symmetric(
@@ -208,7 +226,15 @@ class FoodPage extends GetWidget<FoodController> {
                                         ),
                                       ),
                                       IconButton(
-                                        onPressed: () {},
+                                        onPressed: () => openPopup(
+                                          'Chắc chắn xoá món ăn này ?',
+                                          () {
+                                            controller.deleteFood(
+                                                controller.listFood[index].id);
+                                            controller.getFoodOfRestaurant();
+                                            goBack();
+                                          },
+                                        ),
                                         icon: Image.asset(
                                             'assets/icons/remove.png'),
                                       ),

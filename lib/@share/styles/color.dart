@@ -10,4 +10,5 @@ class AppColor {
   static const Color secondary = Color.fromRGBO(151, 204, 207, 1);
   static const Color header = Color.fromRGBO(235, 147, 67, 1);
   static const Color container = Color.fromRGBO(248, 248, 248, 1);
+  static const Color loginForm = Color.fromRGBO(62, 57, 53, 0.6);
 }
